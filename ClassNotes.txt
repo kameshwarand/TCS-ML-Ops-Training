@@ -2080,3 +2080,639 @@ spec:
   - port: 8000
     targetPort: 8000			
 		
+
+
+
+######################
+Day 12: 21st July 2026
+######################	
+
+
+	Kubernetes Deployment Object 
+
+		apiVersion: apps/v1
+		kind: Deployment
+		metadata:
+		  name: loksai-api-deploy
+		spec:
+		  replicas: 3
+		  selector:
+			matchLabels:
+			  app: api
+		  template:
+			metadata:
+			  labels:
+				app: api
+			spec:
+			  containers:
+			  - name: api
+				image: loksaieta/loksai-mlops830api:latest
+				ports:
+				- containerPort: 8000
+		---
+		apiVersion: v1
+		kind: Service
+		metadata:
+		  name: loksai-api-svc
+		spec:
+		  selector:
+			app: api
+		  ports:
+		  - port: 8000
+			targetPort: 8000
+	
+	
+
+
+		apiVersion: apps/v1
+		kind: Deployment
+		metadata:
+		  name: loksai-ui-deploy
+		spec:
+		  replicas: 1
+		  selector:
+			matchLabels:
+			  app: ui
+		  template:
+			metadata:
+			  labels:
+				app: ui
+			spec:
+			  containers:
+			  - name: ui
+				image: loksaieta/loksai-mlops830ui:latest
+				ports:
+				- containerPort: 8501
+		---
+		apiVersion: v1
+		kind: Service
+		metadata:
+		  name: loksai-ui-svc
+		spec:
+		  type: NodePort
+		  selector:
+			app: ui
+		  ports:
+		  - port: 8501
+			targetPort: 8501
+			nodePort: 30001
+
+
+
+		Deployment Controller Object :::
+		
+			--> It is used to deploy the pods and ensure high availability of pods by creating pod replicas 
+			--> 1. Create Muliple instance/replicas/copies of pods 
+				2. Used to Scale-Up / Scale-Down the Pods 
+				3. Used to Upgrade the application pods 
+				4. Used to Down-grade/roll-back the application pods
+			--> The upgrade/down-grade of application pods can be done without any downtime. 
+			--> To achieve zero-downtime during upgrade/down-grade, By Default, it used Rolling-Update Deployment Strategy.
+				- Supports self-healing.		
+				
+				
+
+*******************************************************************
+*******************************************************************
+
+# 1. Deployment YAML file
+
+# nginx-deploy.yaml
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deploy
+  labels:
+    app: nginx-app
+spec:
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: nginx-app
+    spec:
+      containers:
+      - name: nginx-container
+        image: nginx:stable-otel
+        ports:
+        - containerPort: 80
+  selector:
+    matchLabels:
+      app: nginx-app
+
+
+*******************************************************************
+# 2. Create and Display Deployment
+
+kubectl create -f nginx-deploy.yaml 
+kubectl get deploy -l app=nginx-app
+kubectl get rs -l app=nginx-app
+kubectl get po -l app=nginx-app
+kubectl describe deploy nginx-deploy
+
+*******************************************************************
+# 3. Testing: Rollback update 
+
+kubectl set image deploy nginx-deploy nginx-container=nginx:stable-pearl
+kubectl rollout status deployment/nginx-deploy
+kubectl rollout undo deployment/nginx-deploy
+kubectl rollout status deployment/nginx-deploy
+kubectl describe deploy nginx-deploy | grep -i image
+
+*******************************************************************
+# 4. Testing: Update Version of "nginx:stable-otel" to "nginx:stable-perl"
+
+kubectl set image deploy nginx-deploy nginx-container=nginx:stable-perl
+# or
+kubectl edit deploy nginx-deploy
+kubectl rollout status deployment/nginx-deploy
+kubectl get deploy
+
+*******************************************************************
+# 5. Testing: Scale UP
+
+kubectl scale deployment nginx-deploy --replicas=5
+kubectl get deploy
+kubectl get po -o wide
+
+*******************************************************************
+# 6. Testing: Scale DOWN
+
+kubectl scale deployment nginx-deploy --replicas=3
+kubectl get deploy
+kubectl get po -o wide
+   
+*******************************************************************
+
+# 7. Cleanup
+
+kubectl delete -f nginx-deploy.yaml
+kubectl get deploy
+kubectl get rs
+kubectl get po 
+
+*******************************************************************				
+	
+	- Setup the CICD Pipeline using github-actions ::::
+	
+	- DevOps Team to Create CICD Pipeline:
+	
+		- github-actions / azure pipelines / gitlab-ci / 		# For MLOps 
+		
+
+
+				
+			
+				
+	- Automate Build and Deployment to Kubernetes using github-actions workflow--> CI/CD Pipeline		
+		
+		
+		- Pre-requisites :
+		
+			- Agent :
+			
+				-> GitHub Managed Agent :::
+					- Used to build and create artifacts
+			
+				-> Self Hosted Agent :::
+				
+					- Target Servers ==> Test_Server / K3s Single-Node Cluster / Kubeadm - Multi-Node Cluster
+	
+
+
+			- Enviroment Variables :
+			
+				- Docker_Hub Credentials
+				
+				- Kubeadm Token / Secret Keys 
+				
+			
+			- Create GitHub-Actions Workflow 
+			
+				- *.yaml ==> Based the Job definitions.
+
+
+	Github-Actions :::::
+	
+	Automate the Model Creation and Containerization using CICD Workflow - github-actions workflow.
+	
+	Setup-self-hosted Agent on github
+	
+		- Build_Server 
+		- Deployment Server 
+	
+	Deploy using Kubernetes 
+	
+		1. Launch a Target Server / Kubernetes Cluster & Attach IAM Role for S3.
+		2. Open all the required ports 
+		3. Login and Install the required packages
+				- Docker / K3s/Minikube/Kubeadm 
+
+
+			Use AWS Ubuntu - 22.04V AMI 
+			
+			- sudo -i 
+			
+			- apt update -y  
+			
+			- curl -sfL https://get.k3s.io | sh -
+			
+			- sudo systemctl status k3s
+			
+			- kubectl get nodes 
+
+			
+				- Install unzip utility / curl 
+				
+				- Install aws-cli 
+				
+sudo -i
+
+apt install unzip curl
+
+METHOD 1 — Install AWS CLI v2 (Recommended)
+
+AWS CLI v2 is the latest, stable version.
+
+Step 1 — Download the installer
+cd /tmp
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+
+Step 2 — Unzip
+sudo apt install -y unzip
+unzip awscliv2.zip
+
+Step 3 — Install
+sudo ./aws/install
+
+Step 4 — Verify
+aws --version
+
+
+You should see something like:
+
+aws-cli/2.18.x Python/3.x.x Linux/x86_64
+
+					
+		4. Setup the Credentials:
+			- Create linux user - devopsadminuser
+				- valid Credentials - 
+					 Recommended to have ssh-key - public_Key & Private Keys 
+
+#Add User : 
+
+useradd devopsadmin -s /bin/bash -m -d /home/devopsadmin
+
+su - devopsadmin
+
+#ssh-keygen
+
+#for Ubuntu ::
+#ssh-keygen -t rsa -b 2048 -m PEM								#ubuntu 20.04
+
+ssh-keygen -t ecdsa -b 521										#ubuntu 22.04 or higher version of ubuntu				
+
+
+ls ~/.ssh 
+
+#You should see following two files:
+
+#id_ecdsa - private key
+#id_ecdsa.pub - public
+
+
+#cat id_rsa.pub > authorized_keys
+
+cat id_ecdsa.pub > authorized_keys
+
+chmod 600 /home/devopsadmin/.ssh/*
+
+					 
+				- Enable user access to kubernetes Master 
+				
+					- Create .kube/config under user's home dir. 
+					- Use this user's kube/config file content as token for Authentication on github runner.
+
+root: visudo 
+					
+devopsadmin ALL=(ALL) NOPASSWD: ALL
+
+save & exit
+
+su - devopsadmin
+
+mkdir -p $HOME/.kube
+sudo cp /etc/rancher/k3s/k3s.yaml $HOME/.kube/config
+sudo chown $USER:$USER $HOME/.kube/config
+
+export KUBECONFIG=$HOME/.kube/config
+echo 'export KUBECONFIG=$HOME/.kube/config' >> ~/.bashrc
+
+kubectl get nodes
+										
+cat /home/devopsadmin/.kube/config 			# create Repository Secret in pipeline
+
+					
+		5. Setup github self-hosted action-runner
+		
+			- Goto the Repo level setting 
+			- Actions -> Runner 
+			- Create Runner based on the OS & follow the instructions. 
+
+
+# Create a folder
+$ mkdir actions-runner && cd actions-runnerCopied! # Download the latest runner package
+$ curl -o actions-runner-linux-x64-2.334.0.tar.gz -L https://github.com/actions/runner/releases/download/v2.334.0/actions-runner-linux-x64-2.334.0.tar.gzCopied!# Optional: Validate the hash
+$ echo "048024cd2c848eb6f14d5646d56c13a4def2ae7ee3ad12122bee960c56f3d271  actions-runner-linux-x64-2.334.0.tar.gz" | shasum -a 256 -cCopied!# Extract the installer
+$ tar xzf ./actions-runner-linux-x64-2.334.0.tar.gz
+Configure
+# Create the runner and start the configuration experience
+$ ./config.sh --url https://github.com/Edu-MLOps-May17-26/mlops-e2e-project --token AO62WFUVOEHDVOD7WBAQA5LKEW3EE# Last step, run it!
+$ ./run.sh
+Using your self-hosted runner
+# Use this YAML in your workflow file for each job
+runs-on: self-hosted
+
+
+
+		
+
+name: CI-CD Pipeline
+
+on:
+  push:
+    branches:
+      - master
+jobs:
+  # =============================
+  # JOB 1: Build & Push Images
+  # =============================
+  build:
+    name: Build & Push to DockerHub
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # 2️⃣ Login to DockerHub
+    - name: Login to DockerHub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    # 3️⃣ Build API image
+    - name: Build API Docker image
+      run: |
+        docker build -t ${{ secrets.DOCKER_USERNAME }}/loksai-mlops830api:latest -f docker/Dockerfile.api .
+
+    # 4️⃣ Build UI image
+    - name: Build UI Docker image
+      run: |
+        docker build -t ${{ secrets.DOCKER_USERNAME }}/loksai-mlops830ui:latest -f docker/Dockerfile.ui .
+
+    # 5️⃣ Push API image
+    - name: Push API image
+      run: |
+        docker push ${{ secrets.DOCKER_USERNAME }}/loksai-mlops830api:latest
+
+    # 6️⃣ Push UI image
+    - name: Push UI image
+      run: |
+        docker push ${{ secrets.DOCKER_USERNAME }}/loksai-mlops830ui:latest
+
+  # =============================
+  # JOB 2: Deploy to Kubernetes
+  # =============================
+  deploy:  
+    name: Deploy to Kubernetes
+    runs-on: self-hosted
+    needs: build
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup kubectl
+      run: |
+        mkdir -p ~/.kube
+        echo "${{ secrets.USER_KUBE_CONFIG_DATA }}" > ~/.kube/config
+
+
+    - name: Deploy to Kubernetes
+      run: |
+        kubectl apply -f k8s/api-deployment.yaml		
+	
+	
+	
+	
+
+	- Prepare the parameters ready:
+		like - DOCKER_USERNAME, 
+		
+		secrets.DOCKER_PASSWORD
+	
+	
+	
+	Monitoring:
+		Setup Kubeflow to deploy ML Projects on Kubernetes 
+		Promethus & Grafana 
+		Kubernetes Dashboards 
+
+
+
+#######################
+Day 13: 22nd July 2026
+#######################	
+
+	CI-CD using GitHub-Actions:
+
+		-> github managed runner 
+		
+		-> Self-hosted action runner 
+		
+		
+	- Continuous Monitoring :::
+	
+		-> To Ensure High Availability of the resources during prod implementations.
+		
+		-> Used to maintain the Business Continuity
+		
+		
+		- Infra-Structure Perspectives :::
+		
+			- used to monitor Servers --> CPU/Memory
+			
+			- Monitoring Tools/Service Architecture ::::
+			
+				- Understand the Architecture
+				
+				- Prepare the Monitoring servicess
+
+				- Deploy to Prod 
+				
+
+			- Prometheus Grafana / Dynatrace / TestNG, Seleniums
+			
+
+
+		- Developers' Perspective :
+		
+			- Application Monitoring 
+			
+			- Datadog, App Dynamics 
+			
+	- Setup Prometheus_Grafana using Helm on Kubernetes
+	
+	
+	- Prometheus Time Series Database ::
+		
+		- Handled by the PromQL
+		
+		
+
+Next:
+
+	Kubernetes Dashboards 
+	Kubeflow to Deploy MLProject on Kubernetes 
+	
+
+	
+#######################
+Day 14: 23rd July 2026
+#######################		
+
+	Kubeflow to Deploy MLProject on Kubernetes 	
+	
+	https://www.kubeflow.org/docs/components/pipelines/
+
+What is Kubeflow?
+Kubeflow is an open-source project that contains a curated set of tools and frameworks. The primary goal of Kubeflow is to make it easy to develop, deploy, and manage portable, scalable machine learning workflows. 
+
+Kubeflow is built on top of Kubernetes, an open-source platform for running and orchestrating containers. Kubernetes is constructed to run consistently across different environments, which is key to how Kubeflow operates. Kubeflow is designed to let Kubernetes do what it is good at, allowing you to focus on defining and running ML workflows, including managing data, running notebooks, training models, and serving them. 
+
+Kubeflow evolved from Google’s internal project called TensorFlow Extended.
+
+
+Kubeflow is a platform for data scientists and machine learning engineers containing the best of both worlds’ functionalities. Data scientists can use Kubeflow to experiment with ML models and orchestrate their experiments on Kubernetes in the most efficient way. 
+	
+	Install and Configure Kubeflow Pipelines:
+	
+	
+	Data Validation 
+	
+	Pre-Processing 
+	
+	Train Model 
+	
+	
+	
+	Dev/Build 	- Install Kubeflow pipeline 
+	
+				- Create Virtual Environment 
+				
+				- Prepare the Kubeflow Project  --> *.py
+				- Generate *.yaml 	# Kubernetes Manifest File 
+				
+
+	Kubeflow Dashboard:
+	
+				- Kubernetes_Master --> configure kubeflow pipeline 
+				
+				- Using port mapping expose the kubeflow pods to internet 
+	
+				- Upload *.yaml to Kubeflow Dashboard for deployment.
+				
+				- Deployed to Kubernetes 
+
+
+STAGE 1 - Setup K3s :
+
+Launch EC2 Instance :
+
+	t2.large / t2.xlarge
+	
+	50G EBS Volume 
+
+
+sudo apt update && sudo apt upgrade -y
+
+curl -sfL https://get.k3s.io | sh -
+
+kubectl get nodes
+
+#Add Swap
+
+sudo fallocate -l 4G /swapfile
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+
+echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+
+
+
+STAGE 2 — Install Kubeflow Pipelines
+
+#Create namespace
+
+kubectl create ns kubeflow
+
+#Install Kubeflow Pipelines
+
+kubectl apply -k \
+github.com/kubeflow/pipelines/manifests/kustomize/cluster-scoped-resources
+
+Then
+
+kubectl apply -k \
+github.com/kubeflow/pipelines/manifests/kustomize/env/dev
+
+Wait for pods
+
+kubectl get pods -n kubeflow
+
+When all pods Running.
+
+Access Kubeflow UI
+
+Port forward
+
+kubectl port-forward --address 0.0.0.0 -n kubeflow svc/ml-pipeline-ui 8080:80
+
+
+Open
+
+http://<Public_IP>:8080
+
+Kubeflow dashboard appears.
+
+
+
+
+sudo apt update
+sudo apt install -y python3-venv python3-pip python3-full
+
+
+python3 -m venv mlops-env
+source mlops-env/bin/activate
+
+pip install kfp==2.8.0
+
+
+Next:::
+
+	- MLOps on Cloud :::
+	
+		AWS Sagemaker-AI - Fully Managed AWS Service.
+		
+			--> Use cases of AWS Sagemaker-AI 
+			
+			
+	- 		
+	- MLOps Project ::: (Tueday)
+	
+		- 
+		
