@@ -1,0 +1,37 @@
+HELM Chart:::
+Helm is a pkg manager for kubernetes
+which help to automatically create manifest files for any kubernetes objects in the form of HELM Charts
+
+HELM Chart for prometheus
+
+Eg.: Kubernetes Dashboard installation using HELM
+
+Install HELM   https://helm.sh/docs/intro/install/
+
+https://github.com/helm/helm/releases/tag/v4.1.4
+
+
+https://get.helm.sh/helm-v3.18.3-linux-amd64.tar.gz
+
+	- Goto https://github.com/helm/helm/releases
+
+	- right click on Linux amd64 and copy link address.
+
+on kubernetes master node install Helm
+
+#Downlaod helm tar ball for linux
+
+
+wget https://get.helm.sh/helm-v3.14.0-linux-amd64.tar.gz
+
+
+
+#Extract tar ball
+
+tar -zxvf helm-v3.14.0-linux-amd64.tar.gz 
+
+#Move helm to usr/local/bin/helm
+sudo mv linux-amd64/helm /usr/local/bin/helm
+
+#run helm
+helm
