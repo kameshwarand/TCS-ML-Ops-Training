@@ -1327,7 +1327,7 @@ python3.12 -m venv loksai_env
 
 source loksai_env/bin/activate
 		
-<Download project to build environment>			# Git clone 
+<Download project to build environment>			# Git clone <URL>
 
 cd <project_Folder>
 
