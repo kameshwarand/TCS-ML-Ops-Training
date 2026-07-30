@@ -1950,7 +1950,7 @@ Day 10: 16th July 2026
 		
 		- kubectl get pods 
 	
-		- kubectl get pods --all-namespaces 
+		- kubectl get pods --all-namespaces -o wide
 		
 		
 	- Kubernetes Manifest file ::::
