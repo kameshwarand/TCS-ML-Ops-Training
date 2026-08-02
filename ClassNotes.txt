@@ -1199,8 +1199,6 @@ Day 6: 1st July 2026
 				sudo apt install -y \
 					  python3.12 python3.12-venv python3-pip
 
-				apt install docker.io -y
-
 
 				##sudo apt install -y python3 python3-venv python3-pip
 				
@@ -1327,7 +1325,7 @@ python3.12 -m venv loksai_env
 
 source loksai_env/bin/activate
 		
-<Download project to build environment>			# Git clone <URL>
+<Download project to build environment>			# Git clone 
 
 cd <project_Folder>
 
@@ -1690,9 +1688,8 @@ Next ::::
 			Syntax:
 			
 				docker build -t loksaieta/tcswebapp:v1.0 .					# '.' denotes the Dockerfile reference
-
-				docker build -t kameshwarand31/myapp:latest .
-
+				
+				docker build -t kameshwarand31/myapp:latest .				# '.' denotes the Dockerfile reference
 
 
 
@@ -1785,6 +1782,9 @@ Day 9: 15th July 2026
 			- Login to Docker Hub.
 			
 			- Push to Docker Hub.
+
+			
+				docker push loksaieta/temptcsimg:latest 
 			
 			
 	- Deploy to Kubernetes ::::
@@ -1949,13 +1949,64 @@ Day 10: 16th July 2026
 		- kubectl get nodes 
 		
 		- kubectl get pods 
+
+		- kubectl describe pod <pod name>
 	
-		- kubectl get pods --all-namespaces -o wide
+		- kubectl get pods --all-namespaces -o wide 
+
+		- kubectl apply -f nginx-pod.yaml    # to create pod
+
+		- kubectl create namespace dev		# to create namespace (namespace can (Environment or Application teams) )
+
+		- kubectl create namespace QA
+
+		- kubectl get ns
+
+		- kubectl describe pod nginx-pod
+
+		- kubectl get pods -o wide
+
+		- kubectl exec -it nginx-pod --bash   #login to running pod and identify issue # exit command can be to come out of the pod.
+
+		- kubectl create -f deploy-demo.yaml
+
+		-kubectl get deploy
+
+		-kubectl scale deployment loksai-api-deploy --replicas =3     (# scale up or scale down --- replicas = 10 or replicas =0)
+
+		-kubectl autoscale deployment loksai-api-deploy --replicas =3     (# autoscale up or scale down --- replicas = 10 or replicas =0)
+
+		-kubectl get rs ( #rs - replica set)
+
+		
+
+		 
+
 		
 		
 	- Kubernetes Manifest file ::::
 	
 		- Created by the developers/Kubernetes Associates
+******************************************************************************************************
+		#Sample Manifest File:
+		#Create Pod Object Manifest File
+
+		#nginx-pod.yaml
+		apiVersion: v1
+		kind: pod
+		metadata:
+			name: nginx-pod
+			labels:
+				app: nginx
+				tier: dev
+		spec:
+			containers:
+			-	name: nginx-container
+			 	image: nginx
+				ports: 
+				-	containerPort:80
+*****************************************************************************************************
+			 
 		
 		- Define the properties of the pods 
 		
@@ -1980,6 +2031,8 @@ Day 11: 17th July 2026
 	
 		- Logical Partitioning of the Kubernetes Cluster
 		- Namespaces are created based on the Enviroment Names, Application Team
+
+ 		- kubectl create namespace dev		# to create namespace (namespace can [Environment or Application teams])
 		
 		
 		
@@ -2010,11 +2063,12 @@ Day 11: 17th July 2026
 			--> The upgrade/down-grade of application pods can be done without any downtime. 
 			--> To achieve zero-downtime during upgrade/down-grade, By Default, it used Rolling-Update Deployment Strategy.
 				- Supports self-healing.		
-			
+
+			Rolling update deployment Strategy:			
 			
 			web_app_image:v1.0		==> 	web_app_image:v1.1
 			
-			pod_1.1:v1.0			==>		pod_1.1:v1.1	
+			pod_1.1:v1.0			==>		pod_1.1:v1.1(#perform image upgrade & other 2 pods will be live, once 1.1 is upgraded in 1.0 then pod 1.1 will be upgraded)	
 			pod_1.2:v1.0			==>		pod_1.2:v1.1
 			pod_1.3:v1.0			==>		pod_1.3:v1.0
 				
@@ -2719,5 +2773,244 @@ Next:::
 	- 		
 	- MLOps Project ::: (Tueday)
 	
-		- 
+
+
+#######################
+Day 15: 24th July 2026
+#######################	
+
+	- MLOps on Cloud :::
+	
+		AWS Sagemaker-AI - Fully Managed AWS Service.
+		
+			--> Use cases of AWS Sagemaker-AI 
+
+
+	- Overview of AWS SageMaker-ai :::
+	
+		- AWS-Sagemaker - Is an unified Platform to perform end-to-end MLOps Workflow 
+		
+			- AWS-SageMaker-ai
+			
+				- used by the MLOps Admin/Engg. to automate end-to-end MLOps Workflow 
+	
+	Work with AWS SageMaker-ai :::
+	
+		-> Merits :
+		
+			-> unified Platform
+			
+			-> Simplify most the the works for DS/ML_Engg/MLOps
+			
+			-> Studio - IDE -> Create/Customize Model
+			
+			-> canvas/Studio/ -> Monitoring
+			
+			-> Have less learn curve -> for any ML_Engg/DS. 
+			
+		-> demerits :
+		
+			-> Cost 
+			
+			-> Vendor Dependency
+		
+		
+		
+		- Create AWS Sagemaker-AI 
+		
+			- Domain 
+			
+			- User Profile --> IAM User Profile -> IAM User Group -> RBAC 
+				- Role Based Access Control 
+				
+				
+				
+			- RBAC --> Role Based Access Control 		--> IAM Level 
+			
+			- ABAC --> Attribute Based Access Control 	--> Sagemaker Level
+				
+				
+			- AWS Cli/IAC - CFT to Create AWS SageMaker-ai Projects -> Domain/user/studio
+				- VPC/Subnet/IGW 
+				- AWS Sagemaker Studio 
+					- Develop & Deploy ML Models 
+
+## AWS SageMaker Configuration using CLI ::::
+
+	https://docs.aws.amazon.com/sagemaker/latest/dg/mlops.html
+	
+	
+
+
+	MLOPS_ Build Environment:
+
+
+		cloned ml proj repo
+		
+		dvc - 
+		
+		streamlit, FastAPI -> 
+		
+		
+		
+		containerize
+		
+		kubernetes
+		
+## AWS SageMaker Configuration using CLI ::::
+
+	
+	 
+
+## Install SageMaker using AWS CLI
+## Get the Default VPC ID
+aws ec2 describe-vpcs \
+  --filters "Name=isDefault,Values=true" \
+  --query "Vpcs[0].VpcId" \
+  --output text \
+  --region <REGION>
+## List Subnets Under the Default VPC
+aws ec2 describe-subnets \
+  --filters "Name=vpc-id,Values=<DEFAULT_VPC_ID>" \
+  --query "Subnets[].SubnetId" \
+  --output text \
+  --region <REGION>
+## Create an Execution Role for SageMaker Domain
+## Create a simple trust policy
+
+## Save as trust.json:
+
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": { "Service": "sagemaker.amazonaws.com" },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+## Create the role
+
+aws iam create-role \
+  --role-name SageMakerDomainExecutionRole \
+  --assume-role-policy-document file://trust.json
+Attach a basic policy (beginner friendly)
+
+aws iam attach-role-policy \
+  --role-name SageMakerDomainExecutionRole \
+  --policy-arn arn:aws:iam::aws:policy/AmazonSageMakerFullAccess
+## Save the role ARN from:
+
+aws iam get-role --role-name SageMakerDomainExecutionRole --query "Role.Arn" --output text
+
+## Create the SageMaker Domain (Using Default VPC)
+## This is the core step.
+
+aws sagemaker create-domain \
+  --domain-name my-sagemaker-domain \
+  --auth-mode IAM \
+  --vpc-id <DEFAULT_VPC_ID> \
+  --subnet-ids <SUBNET1> <SUBNET2> \
+  --app-network-access-type VpcOnly \
+  --default-user-settings "{
+      \"ExecutionRole\": \"<ROLE_ARN>\"
+   }" \
+  --region <REGION>
+## This returns a DomainId. If you lose it, list domains:
+
+aws sagemaker list-domains --region <REGION>
+
+Create a SageMaker UserProfile + Tag It
+ABAC depends on tags.
+
+aws sagemaker create-user-profile \
+  --domain-id <DOMAIN_ID> \
+  --user-profile-name alice-profile \
+  --tags Key=studiouserid,Value=alice123 \
+  --region <REGION>
+## Create the IAM User and Tag the User
+## The IAM user must have the same tag for ABAC matching.
+
+aws iam create-user --user-name alice-iam-user
+## Add ABAC tag
+
+aws iam tag-user \
+  --user-name alice-iam-user \
+  --tags Key=studiouserid,Value=alice123
+## Create the ABAC Policy
+## This policy enforces two things:
+
+## The IAM user can only generate a presigned URL for a user profile whose tag matches their own (studiouserid).
+
+## The IAM user can view the domain and user profile in the SageMaker console.
+
+## Save this as sagemaker-abac.json:
+
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowConsoleListAndDescribe",
+      "Effect": "Allow",
+      "Action": [
+        "sagemaker:ListDomains",
+        "sagemaker:ListUserProfiles",
+        "sagemaker:ListApps",
+        "sagemaker:DescribeDomain",
+        "sagemaker:DescribeUserProfile",
+        "sagemaker:ListTags"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "AllowPresignedUrlWhenTagMatches",
+      "Effect": "Allow",
+      "Action": [
+        "sagemaker:CreatePresignedDomainUrl"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "sagemaker:ResourceTag/studiouserid": "${aws:PrincipalTag/studiouserid}"
+        }
+      }
+    }
+  ]
+}
+## Create the IAM policy
+aws iam create-policy \
+  --policy-name SageMaker-Studio-ABAC \
+  --policy-document file://sagemaker-abac.json
+## Attach the Policy to the IAM User
+aws iam attach-user-policy \
+  --user-name alice-iam-user \
+  --policy-arn arn:aws:iam::<ACCOUNT_ID>:policy/SageMaker-Studio-ABAC
+## How the IAM User Opens SageMaker Studio
+## There are two ways now:
+
+## Using the SageMaker Console (now works due to list permissions)
+
+IAM user signs in → goes to:
+Amazon SageMaker → Studio → Domains
+
+They can now see: The domain -> The user profile
+
+Using a Presigned URL (ABAC-restricted)
+
+## The user (or admin) runs:
+
+aws sagemaker create-presigned-domain-url \
+  --domain-id <DOMAIN_ID> \
+  --user-profile-name alice-profile \
+  --session-expiration-duration-in-seconds 3600 \
+  --region <REGION>
+  
+## This returns a URL that opens SageMaker Studio only for this UserProfile.
+
+If an IAM user tries to open another user’s profile → access denied because the tags won't match.	
+				
+			
+
+
 		
